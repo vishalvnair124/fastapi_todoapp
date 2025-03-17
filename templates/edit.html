@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Edit Task</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container mt-4">
+      <h2>Edit Task</h2>
+      <form id="editTaskForm">
+        <div class="mb-3">
+          <label class="form-label">Task Title</label>
+          <input
+            type="hidden"
+            class="form-control"
+            id="tid"
+            name="tid"
+            value="{{ task.task_id }}"
+            required
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="title"
+            name="title"
+            value="{{ task.task_title }}"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Task Description</label>
+          <textarea class="form-control" id="desc" name="desc" required>
+{{ task.task_desc }}</textarea
+          >
+        </div>
+        <button
+          type="button"
+          class="btn btn-primary"
+          onclick="updateTask('PUT')"
+        >
+          Update Task
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="updateTask('PATCH')"
+        >
+          Update Title Only
+        </button>
+      </form>
+    </div>
+
+    <script>
+      function updateTask(method) {
+        const taskId = document.getElementById("tid").value;
+        const title = document.getElementById("title").value.trim();
+        const desc = document.getElementById("desc").value.trim();
+
+        // Get initial values from HTML attributes
+        const initialTitle = document
+          .getElementById("title")
+          .getAttribute("value")
+          .trim();
+        const initialDesc = document.getElementById("desc").textContent.trim();
+
+        // Check if any change has been made
+        if (
+          method === "PUT" &&
+          title === initialTitle &&
+          desc === initialDesc
+        ) {
+          alert("No changes detected. Please modify the task before updating.");
+          return;
+        }
+
+        if (method === "PATCH" && title === initialTitle) {
+          alert("No changes detected in the title.");
+          return;
+        }
+
+        const taskData =
+          method === "PUT" ? { title: title, desc: desc } : { title: title };
+
+        fetch(`/tasks/${taskId}`, {
+          method: method,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(taskData), // Send JSON
+        })
+          .then(async (response) => {
+            if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error(`Error ${response.status}: ${errorText}`);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            alert(data.message);
+            window.location.href = "/";
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+    </script>
+  </body>
+</html>

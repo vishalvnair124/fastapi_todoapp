@@ -43,6 +43,9 @@
             <td>{{ task.task_title }}</td>
             <td>{{ task.task_desc }}</td>
             <td>
+              <a href="/edit/{{ task.task_id }}" class="btn btn-warning"
+                >Edit</a
+              >
               <button
                 class="btn btn-danger"
                 onclick="deleteTask({{ task.task_id }});"
@@ -57,7 +60,7 @@
     </div>
 
     <script>
-      //requuest
+      // Request to delete a task
       function deleteTask(taskId) {
         fetch(`/tasks/${taskId}`, { method: "DELETE" })
           .then((response) => response.json())
