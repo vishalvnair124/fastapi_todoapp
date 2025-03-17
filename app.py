@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 import conn as con  # Import your MySQL connection
 from fastapi import FastAPI, HTTPException, Request, Form
@@ -9,8 +10,8 @@ templates = Jinja2Templates(directory="templates")  # Folder for HTML files
 
 
 class TaskUpdate(BaseModel):
-    title: str
-    desc: str
+    title: Optional[str] = None
+    desc: Optional[str] = None  
 
 
 
@@ -85,10 +86,12 @@ async def update_task(task_id: int, task: TaskUpdate):
 @app.patch("/tasks/{task_id}")
 async def update_task_partial(task_id: int, task: TaskUpdate):
     mycursor = con.mydb.cursor()
+    print(task_id)
 
     # Check if task exists before updating
     mycursor.execute("SELECT * FROM tasks WHERE task_id = %s", (task_id,))
     existing_task = mycursor.fetchone()
+    print(existing_task)
 
     if not existing_task:
         mycursor.close()

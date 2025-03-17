@@ -61,14 +61,12 @@
         const title = document.getElementById("title").value.trim();
         const desc = document.getElementById("desc").value.trim();
 
-        // Get initial values from HTML attributes
         const initialTitle = document
           .getElementById("title")
           .getAttribute("value")
           .trim();
         const initialDesc = document.getElementById("desc").textContent.trim();
 
-        // Check if any change has been made
         if (
           method === "PUT" &&
           title === initialTitle &&
@@ -83,15 +81,19 @@
           return;
         }
 
-        const taskData =
-          method === "PUT" ? { title: title, desc: desc } : { title: title };
+        const taskData = { title: title };
+        if (method === "PUT") {
+          taskData.desc = desc; // Ensure desc is always sent for PUT
+        } else {
+          taskData.desc = initialDesc; // PATCH will include the current desc to prevent 422
+        }
 
         fetch(`/tasks/${taskId}`, {
           method: method,
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(taskData), // Send JSON
+          body: JSON.stringify(taskData),
         })
           .then(async (response) => {
             if (!response.ok) {
