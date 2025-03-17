@@ -7,7 +7,7 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")  # Folder for HTML files
 
 
-# 📌 1️⃣ Home Route - Display Tasks
+#  Home Route - Display Tasks
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     mycursor = con.mydb.cursor(dictionary=True)
@@ -18,7 +18,7 @@ async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "tasks": tasks})
 
 
-# 📌 2️⃣ Add Task
+#  Add Task
 @app.post("/add/")
 async def create_item(title: str = Form(...), desc: str = Form(...)):
     mycursor = con.mydb.cursor()
@@ -31,7 +31,7 @@ async def create_item(title: str = Form(...), desc: str = Form(...)):
     return RedirectResponse(url="/", status_code=303)  # Redirect back to homepage
 
 
-# 📌 3️⃣ Update Task (PUT - Full Update)
+# Update Task (PUT - Full Update)
 @app.put("/tasks/{task_id}")
 async def update_task(task_id: int, title: str, desc: str):
     mycursor = con.mydb.cursor()
@@ -44,7 +44,7 @@ async def update_task(task_id: int, title: str, desc: str):
     return {"message": "Task updated successfully"}
 
 
-# 📌 4️⃣ Partial Update Task (PATCH)
+# Partial Update Task (PATCH)
 @app.patch("/tasks/{task_id}")
 async def patch_task(task_id: int, title: str = None, desc: str = None):
     mycursor = con.mydb.cursor()
@@ -70,7 +70,7 @@ async def patch_task(task_id: int, title: str = None, desc: str = None):
     return {"message": "Task updated successfully"}
 
 
-# 📌 5️⃣ Delete Task
+#  Delete Task
 @app.delete("/tasks/{task_id}")
 async def delete_task(task_id: int):
     mycursor = con.mydb.cursor()
